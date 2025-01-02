@@ -1,0 +1,16 @@
+<Project>
+
+  <PropertyGroup>
+    <Authors>Michal Gajda (michal@gajda.co.uk)</Authors>
+    <ProductName>Hermes</ProductName>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>IDE0290;S112;S1125;S1135;S2094;S6703;S2583;CS0612;</NoWarn>
+  </PropertyGroup>
+
+</Project>
