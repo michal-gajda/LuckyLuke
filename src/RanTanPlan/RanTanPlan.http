@@ -1,0 +1,6 @@
+@RanTanPlan_HostAddress = http://localhost:5171
+
+GET {{RanTanPlan_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
