@@ -7,6 +7,8 @@ const string SERVICE_NAME = "RanTanPlan";
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHealthChecks();
+
 builder.Logging.AddOpenTelemetry(options =>
 {
     options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(SERVICE_NAME)).AddOtlpExporter();
@@ -26,6 +28,8 @@ builder.Services.AddSingleton(TracerProvider.Default.GetTracer(SERVICE_NAME));
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseHealthChecks("/health");
 
 if (app.Environment.IsDevelopment())
 {

@@ -11,6 +11,8 @@ const string SERVICE_NAME = "RinTinTin";
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHealthChecks();
+
 builder.Logging.AddOpenTelemetry(options =>
 {
     options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(SERVICE_NAME)).AddOtlpExporter();
@@ -40,6 +42,8 @@ builder.Services.AddRefitClient<IRanTanPlanService>()
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseHealthChecks("/health");
 
 if (app.Environment.IsDevelopment())
 {
