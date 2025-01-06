@@ -21,6 +21,8 @@ builder.Services.AddOpenTelemetry()
           .AddAspNetCoreInstrumentation()
           .AddOtlpExporter());
 
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(SERVICE_NAME));
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

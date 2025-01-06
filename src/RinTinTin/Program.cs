@@ -26,6 +26,8 @@ builder.Services.AddOpenTelemetry()
           .AddAspNetCoreInstrumentation()
           .AddOtlpExporter());
 
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(SERVICE_NAME));
+
 builder.Services.AddSingleton(builder.Configuration.GetSection("RanTanPlan").Get<RanTanPlanOptions>()!);
 
 builder.Services.AddRefitClient<IRanTanPlanService>()
