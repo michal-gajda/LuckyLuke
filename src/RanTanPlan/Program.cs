@@ -1,25 +1,22 @@
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-const string OTLP_LOGS = "http://localhost:5341/ingest/otlp/v1/logs";
-const string OTLP_TRACES = "http://localhost:5341/ingest/otlp/v1/traces";
 const string SERVICE_NAME = "RanTanPlan";
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddOpenTelemetry(options =>
 {
-    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(SERVICE_NAME)).AddOtlpExporter(configure => { configure.Endpoint = new Uri(OTLP_LOGS); configure.Protocol = OtlpExportProtocol.HttpProtobuf; });
+    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(SERVICE_NAME)).AddOtlpExporter();
 });
 
 builder.Services.AddOpenTelemetry()
       .ConfigureResource(resource => resource.AddService(SERVICE_NAME))
       .WithTracing(tracing => tracing
           .AddAspNetCoreInstrumentation()
-          .AddOtlpExporter(configure => { configure.Endpoint = new Uri(OTLP_TRACES); configure.Protocol = OtlpExportProtocol.HttpProtobuf; }))
+          .AddOtlpExporter())
       .WithMetrics(metrics => metrics
           .AddAspNetCoreInstrumentation()
           .AddOtlpExporter());

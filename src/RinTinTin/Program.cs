@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -8,15 +7,13 @@ using Refit;
 using RinTinTin;
 using RinTinTin.Interfaces;
 
-const string OTLP_LOGS = "http://localhost:5341/ingest/otlp/v1/logs";
-const string OTLP_TRACES = "http://localhost:5341/ingest/otlp/v1/traces";
 const string SERVICE_NAME = "RinTinTin";
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddOpenTelemetry(options =>
 {
-    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(SERVICE_NAME)).AddOtlpExporter(configure => { configure.Endpoint = new Uri(OTLP_LOGS); configure.Protocol = OtlpExportProtocol.HttpProtobuf; });
+    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(SERVICE_NAME)).AddOtlpExporter();
 });
 
 builder.Services.AddOpenTelemetry()
@@ -24,7 +21,7 @@ builder.Services.AddOpenTelemetry()
       .WithTracing(tracing => tracing
           .AddAspNetCoreInstrumentation()
           .AddHttpClientInstrumentation()
-          .AddOtlpExporter(configure => { configure.Endpoint = new Uri(OTLP_TRACES); configure.Protocol = OtlpExportProtocol.HttpProtobuf; }))
+          .AddOtlpExporter())
       .WithMetrics(metrics => metrics
           .AddAspNetCoreInstrumentation()
           .AddOtlpExporter());
