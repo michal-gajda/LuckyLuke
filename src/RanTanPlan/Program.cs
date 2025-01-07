@@ -7,6 +7,8 @@ const string SERVICE_NAME = "RanTanPlan";
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpLogging(_ => { });
+
 builder.Services.AddHealthChecks();
 
 builder.Logging.AddOpenTelemetry(options =>
@@ -18,6 +20,7 @@ builder.Services.AddOpenTelemetry()
       .ConfigureResource(resource => resource.AddService(SERVICE_NAME))
       .WithTracing(tracing => tracing
           .AddAspNetCoreInstrumentation()
+          .AddHttpClientInstrumentation()
           .AddOtlpExporter())
       .WithMetrics(metrics => metrics
           .AddAspNetCoreInstrumentation()
@@ -31,6 +34,8 @@ var app = builder.Build();
 
 app.UseHealthChecks("/health");
 
+app.UseHttpLogging();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -38,7 +43,16 @@ if (app.Environment.IsDevelopment())
 
 var summaries = new[]
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    "Balmy",
+    "Bracing",
+    "Chilly",
+    "Cool",
+    "Freezing",
+    "Hot",
+    "Mild",
+    "Scorching",
+    "Sweltering",
+    "Warm",
 };
 
 app.MapGet("/weatherforecast", () =>
@@ -51,11 +65,12 @@ app.MapGet("/weatherforecast", () =>
             summaries[Random.Shared.Next(summaries.Length)]
         ))
         .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
 
-app.Run();
+    return forecast;
+}
+).WithName("GetWeatherForecast");
+
+await app.RunAsync();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {

@@ -11,6 +11,8 @@ const string SERVICE_NAME = "RinTinTin";
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpLogging(_ => { });
+
 builder.Services.AddHealthChecks();
 
 builder.Logging.AddOpenTelemetry(options =>
@@ -45,6 +47,8 @@ var app = builder.Build();
 
 app.UseHealthChecks("/health");
 
+app.UseHttpLogging();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -52,6 +56,6 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/weatherforecast", async ([FromServices] IRanTanPlanService ranTanPlanService, CancellationToken cancellationToken = default) =>
     await ranTanPlanService.GetWeatherForecasts(cancellationToken)
-    ).WithName("GetWeatherForecast");
+).WithName("GetWeatherForecast");
 
 await app.RunAsync();
