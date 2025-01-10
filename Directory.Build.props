@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <NoWarn>IDE0290;S112;S1125;S1135;S2094;S6703;S2583;CS0612;</NoWarn>
+    <NoWarn>IDE0290;S112;S1125;S1135;S2094;S6703;S2583;CS0612;EXTEXP0018;</NoWarn>
   </PropertyGroup>
 
 </Project>
