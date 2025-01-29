@@ -4,6 +4,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 const string SERVICE_NAME = "RanTanPlan";
+const string INSTANCE_ID = "Dev";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,17 +12,23 @@ builder.Services.AddHealthChecks();
 
 builder.Logging.AddOpenTelemetry(options =>
 {
-    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(SERVICE_NAME)).AddOtlpExporter();
+    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(SERVICE_NAME, autoGenerateServiceInstanceId: false, serviceInstanceId: INSTANCE_ID)).AddOtlpExporter();
 });
 
 builder.Services.AddOpenTelemetry()
-      .ConfigureResource(resource => resource.AddService(SERVICE_NAME))
+      .ConfigureResource(resource => resource.AddService(SERVICE_NAME, autoGenerateServiceInstanceId: false, serviceInstanceId: INSTANCE_ID))
       .WithTracing(tracing => tracing
           .AddAspNetCoreInstrumentation()
           .AddOtlpExporter())
       .WithMetrics(metrics => metrics
           .AddAspNetCoreInstrumentation()
-          .AddOtlpExporter());
+          .AddRuntimeInstrumentation()
+          .AddProcessInstrumentation()
+          .AddOtlpExporter(cfg =>
+          {
+              cfg.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+              cfg.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
+          }));
 
 builder.Services.AddSingleton(TracerProvider.Default.GetTracer(SERVICE_NAME));
 
