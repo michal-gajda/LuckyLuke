@@ -7,10 +7,7 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5081",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:5341/ingest/otlp",
-        "OTEL_EXPORTER_OTLP_HEADERS": "X-Seq-ApiKey=WDn2QcUR0yOCncKccl2x",
-        "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }

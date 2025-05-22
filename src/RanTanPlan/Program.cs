@@ -3,7 +3,10 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-const string SERVICE_NAME = "RanTanPlan";
+const string SERVICE_NAME = "ran-tan-plan";
+const string SERVICE_NAMESPACE = "lucky-luke";
+const string SERVICE_VERSION = "1.0.0";
+const string INSTANCE_ID = "development";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,22 +14,31 @@ builder.Services.AddHttpLogging(_ => { });
 
 builder.Services.AddHealthChecks();
 
+var resourceBuilder = ResourceBuilder.CreateDefault()
+    .AddService(SERVICE_NAME, SERVICE_NAMESPACE, SERVICE_VERSION, autoGenerateServiceInstanceId: false, INSTANCE_ID);
+
 builder.Logging.AddOpenTelemetry(options =>
 {
-    options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(SERVICE_NAME)).AddOtlpExporter();
+    options.IncludeFormattedMessage = true;
+    options.IncludeScopes = true;
+    options.ParseStateValues = true;
+    options.SetResourceBuilder(resourceBuilder);
+    options.AddOtlpExporter();
 });
 
 builder.Services.AddOpenTelemetry()
-      .ConfigureResource(resource => resource.AddService(SERVICE_NAME))
-      .WithTracing(tracing => tracing
-          .AddAspNetCoreInstrumentation()
-          .AddHttpClientInstrumentation()
-          .AddOtlpExporter())
-      .WithMetrics(metrics => metrics
-          .AddAspNetCoreInstrumentation()
-          .AddOtlpExporter());
+    .WithTracing(tracing => tracing
+        .SetResourceBuilder(resourceBuilder)
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter())
+    .WithMetrics(metrics => metrics
+        .SetResourceBuilder(resourceBuilder)
+        .AddAspNetCoreInstrumentation()
+        .AddOtlpExporter());
 
-builder.Services.AddSingleton(TracerProvider.Default.GetTracer(SERVICE_NAME));
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer(SERVICE_NAME, SERVICE_VERSION));
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddOpenApi();
 
